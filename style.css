@@ -17,7 +17,7 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-main);
-    min-height: 100vh; /* Fixed 'screen' error to standard 100vh */
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,7 +36,7 @@ body {
     padding: 20px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     display: flex;
-    flex-direction: column; /* Fixed typo from 'flex-col: column' */
+    flex-direction: column;
     gap: 15px;
 }
 
@@ -73,7 +73,7 @@ body {
     grid-template-rows: repeat(18, 1fr);
     grid-template-columns: repeat(18, 1fr);
     gap: 1px;
-    padding: 2px;
+    padding: 4px; /* Slightly increased padding for clear border visibility */
     position: relative;
     overflow: hidden;
 }
@@ -188,7 +188,6 @@ body {
     margin-top: 10px;
 }
 
-/* Desktop screen par buttons automatic hide ho jayenge */
 @media (min-width: 768px) {
     .dpad-container { display: none; }
 }
