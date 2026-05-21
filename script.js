@@ -3,6 +3,16 @@ const GRID_SIZE = 18;
 let gameInterval = null;
 let score = 0;
 let currentDifficulty = 'medium';
+let gameStarted = false; // Tracks if the player made the first move
+
+// Audio Asset Initialization
+const foodSound = new Audio("food.mp3");
+const overSound = new Audio("gameover.mp3");
+const moveSound = new Audio("move.mp3");
+const musicSound = new Audio("music.mp3");
+
+// Loop continuous background ambient music
+musicSound.loop = true;
 
 // Snake Setup (Grid is 1 to 18)
 let snake = [
@@ -12,8 +22,8 @@ let snake = [
 ];
 
 let food = { x: 5, y: 5 };
-let direction = { x: 0, y: -1 }; // Initial direction: UP
-let lastExecutedDirection = { x: 0, y: -1 }; // Prevents instant reverse self-collision bug
+let direction = { x: 0, y: 0 }; // Set to 0,0 initially so it doesn't move until input
+let lastExecutedDirection = { x: 0, y: 0 }; 
 
 // Difficulty Speed Map (In Milliseconds)
 const speeds = {
@@ -45,14 +55,22 @@ function startGame() {
         { x: 9, y: 10 },
         { x: 9, y: 11 }
     ];
-    direction = { x: 0, y: -1 };
-    lastExecutedDirection = { x: 0, y: -1 };
+    
+    // Kept static until first user command interaction
+    direction = { x: 0, y: 0 };
+    lastExecutedDirection = { x: 0, y: 0 };
+    gameStarted = false;
     
     document.getElementById('score').innerText = `Score : ${score}`;
     document.getElementById('speed-display').innerText = `Speed: ${speedMultipliers[currentDifficulty]}`;
     document.getElementById('start-screen').classList.add('hidden');
     
     generateFood();
+    renderFrame(); // Render initial static frame for preparation
+
+    // Start background score music safely after explicit UI click interaction
+    musicSound.currentTime = 0;
+    musicSound.play().catch(e => console.log("Audio playback waiting for keypress..."));
     
     if (gameInterval) clearInterval(gameInterval);
     gameInterval = setInterval(gameEngine, speeds[currentDifficulty]);
@@ -60,6 +78,9 @@ function startGame() {
 
 // Core Game Loop
 function gameEngine() {
+    // If player hasn't pressed any arrow key yet, hold translation loops
+    if (!gameStarted) return;
+
     // 1. Collision Check (Wall & Tail)
     if (isCollision()) {
         gameOver();
@@ -71,6 +92,8 @@ function gameEngine() {
 
     // 2. Food Consumption Check
     if (snake[0].x === food.x && snake[0].y === food.y) {
+        foodSound.currentTime = 0;
+        foodSound.play().catch(e => {}); // Play crunch sound effect
         score += 10;
         document.getElementById('score').innerText = `Score : ${score}`;
         generateFood();
@@ -92,19 +115,46 @@ function gameEngine() {
 
 // Direction Input Handling (Keyboard & D-pad Touch combined safe lock)
 function handleDirection(move) {
+    let triggered = false;
+
     switch (move) {
         case 'UP':
-            if (lastExecutedDirection.y !== 1) direction = { x: 0, y: -1 };
+            // If standing still or not moving down, allow UP
+            if (lastExecutedDirection.y !== 1) {
+                direction = { x: 0, y: -1 };
+                triggered = true;
+            }
             break;
         case 'DOWN':
-            if (lastExecutedDirection.y !== -1) direction = { x: 0, y: 1 };
+            if (lastExecutedDirection.y !== -1 && gameStarted) { // Prevent direct backing into tail on first move
+                direction = { x: 0, y: 1 };
+                triggered = true;
+            }
             break;
         case 'LEFT':
-            if (lastExecutedDirection.x !== 1) direction = { x: -1, y: 0 };
+            if (lastExecutedDirection.x !== 1) {
+                direction = { x: -1, y: 0 };
+                triggered = true;
+            }
             break;
         case 'RIGHT':
-            if (lastExecutedDirection.x !== -1) direction = { x: 1, y: 0 };
+            if (lastExecutedDirection.x !== -1) {
+                direction = { x: 1, y: 0 };
+                triggered = true;
+            }
             break;
+    }
+
+    // Play move sound and unfreeze engine loop execution if change happened
+    if (triggered) {
+        moveSound.currentTime = 0;
+        moveSound.play().catch(e => {});
+        
+        if (!gameStarted) {
+            gameStarted = true;
+            // Backup assurance to start loop audio if blocked initially by browser
+            musicSound.play().catch(e => {});
+        }
     }
 }
 
@@ -165,6 +215,11 @@ function renderFrame() {
 // Game Over Intermission state
 function gameOver() {
     clearInterval(gameInterval);
+    
+    musicSound.pause(); // Stop background track
+    overSound.currentTime = 0;
+    overSound.play().catch(e => {}); // Play game over sound effect
+    
     document.getElementById('menu-title').innerText = "Game Over 💀";
     document.getElementById('start-screen').querySelector('p').innerText = `Final Score: ${score}`;
     document.getElementById('start-screen').classList.remove('hidden');
