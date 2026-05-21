@@ -1,59 +1,228 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+:root {
+    --bg-color: #0f172a;
+    --panel-bg: rgba(30, 41, 59, 0.7);
+    --border-color: rgba(71, 85, 105, 0.4);
+    --neon-green: #10b981;
+    --neon-pulse: #3b82f6;
+    --text-main: #f8fafc;
+}
 
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.body {
-    background: url("bg.jpg ");
-    min-height: 100vh;
-    background-size: 100vw 100vh;
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    min-height: 100vh; /* Fixed 'screen' error to standard 100vh */
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px;
+    overflow-x: hidden;
+    padding: 15px;
+}
+
+.game-container {
     position: relative;
+    width: 100%;
+    max-width: 500px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column; /* Fixed typo from 'flex-col: column' */
+    gap: 15px;
 }
 
-#board {
-    width: 90vmin;
-    height: 92vmin;
-    background: linear-gradient(rgb(186, 213, 186), rgb(202, 202, 99));
-    border: 2px solid black;
-    display: grid;
-    grid-template-columns: repeat(18, 1fr);
-    grid-template-rows: repeat(18, 1fr);
-
-}
-
-.food {
-    background: linear-gradient(purple, yellow);
-    border-radius: 7px;
-
-}
-
-.snake {
-    background-color: purple;
-    border-radius: 11px;
-}
-
-.head {
-    border-radius: 6px;
-    background: linear-gradient(purple, green);
+.header-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 12px 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
 }
 
 #score {
-    /* background-color: rgb(178, 203, 178); */
-    color: black;
-    padding: 12px;
-    font-weight: bold;
-    position: absolute;
-    right: 34px;
-    border-radius: 5px;
-    top: 26px;
-    font-size: 30px;
-    font-family: "Poppins", serif;
-    font-weight: 600;
-
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #3b82f6;
 }
+
+#speed-display {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+#board {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #020617;
+    border: 2px solid #1e293b;
+    border-radius: 16px;
+    display: grid;
+    grid-template-rows: repeat(18, 1fr);
+    grid-template-columns: repeat(18, 1fr);
+    gap: 1px;
+    padding: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Snake & Food Styling */
+.head {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 35%;
+    box-shadow: 0 0 8px #3b82f6;
+    z-index: 10;
+}
+
+.snake {
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    border-radius: 4px;
+}
+
+.food {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    border-radius: 50%;
+    box-shadow: 0 0 12px #ef4444;
+    animation: pulse 1.5s infinite alternate;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); }
+    100% { transform: scale(1.05); box-shadow: 0 0 16px #ef4444; }
+}
+
+/* Menu Overlay Screens */
+.screen-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    z-index: 100;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.screen-overlay .subtitle {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.screen-overlay.hidden {
+    display: none !important;
+}
+
+.screen-overlay h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #3b82f6, #10b981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 5px;
+}
+
+.difficulty-container {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.diff-btn {
+    background: #1e293b;
+    border: 1px solid var(--border-color);
+    color: #94a3b8;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.diff-btn.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #60a5fa;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
+.start-btn {
+    background: linear-gradient(to right, #10b981, #059669);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 200px;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.start-btn:active { transform: scale(0.98); }
+
+/* Mobile Controller Layout */
+.dpad-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+/* Desktop screen par buttons automatic hide ho jayenge */
+@media (min-width: 768px) {
+    .dpad-container { display: none; }
+}
+
+.dpad {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+}
+
+.dpad-btn {
+    position: absolute;
+    background: #1e293b;
+    border: 1px solid var(--border-color);
+    color: #f8fafc;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    touch-action: manipulation;
+}
+
+.dpad-btn:active { background: #3b82f6; color: white; }
+.dpad-up { top: 6px; left: 57px; }
+.dpad-down { bottom: 6px; left: 57px; }
+.dpad-left { top: 57px; left: 6px; }
+.dpad-right { top: 57px; right: 6px; }
