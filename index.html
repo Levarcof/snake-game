@@ -3,21 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake-Game</title>
+    <title>⚡ Premium Neon Snake Arcade</title>
+    <!-- CSS File Linking -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="body">
-       
-        <div id="board">
 
-        </div>
-         <div id="score">
+    <div class="game-container">
+        <!-- Main Game Interactive Overlay -->
+        <div id="start-screen" class="screen-overlay">
+            <div>
+                <h1 id="menu-title">Snake Arcade</h1>
+                <p class="subtitle">Select your path and start rolling</p>
+            </div>
             
+            <div class="difficulty-container">
+                <button class="diff-btn" onclick="setDifficulty('easy')">Easy</button>
+                <button class="diff-btn active" onclick="setDifficulty('medium')">Medium</button>
+                <button class="diff-btn" onclick="setDifficulty('hard')">Hard</button>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">PLAY</button>
+        </div>
+
+        <!-- Upper Metrics Dashboard -->
+        <div class="header-panel">
+            <div id="score">Score : 0</div>
+            <div id="speed-display">Speed: 1.0x</div>
+        </div>
+
+        <!-- Core Game Render Board -->
+        <div id="board"></div>
+
+        <!-- Virtual Circular Mobile Controller Touch Pad -->
+        <div class="dpad-container">
+            <div class="dpad">
+                <button class="dpad-btn dpad-up" onclick="handleDirection('UP')">▲</button>
+                <button class="dpad-btn dpad-left" onclick="handleDirection('LEFT')">◀</button>
+                <button class="dpad-btn dpad-right" onclick="handleDirection('RIGHT')">▶</button>
+                <button class="dpad-btn dpad-down" onclick="handleDirection('DOWN')">▼</button>
+            </div>
         </div>
     </div>
-    
+
+    <!-- JavaScript File Linking -->
     <script src="script.js"></script>
-    
 </body>
 </html>
